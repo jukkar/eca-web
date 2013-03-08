@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ -f config.status ]; then
+	make maintainer-clean
+fi
+
+./bootstrap && \
+    ./configure --enable-maintainer-mode \
+		--prefix=/opt/eca-web \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--sysconfdir=/etc \
+		$*
