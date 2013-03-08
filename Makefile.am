@@ -34,7 +34,7 @@ eca_web_sources = \
 	src/templates/bluetooth.html \
 	src/templates/service.html
 
-EXTRA_DIST = $(eca_web_sources)
+EXTRA_DIST = $(eca_web_sources) COPYING
 
 eca_webdir = @prefix@
 eca_web_SCRIPTS = $(eca_web_sources)
