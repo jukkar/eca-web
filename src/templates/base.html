@@ -1,0 +1,39 @@
+$def with (page, pagetitle=None, logout=None)
+
+<div class="base">
+<title>\
+$if pagetitle: $pagetitle\
+</title>
+<h2><a href="/logout">\
+$if logout: $logout\
+</a>
+</h2>
+<div class="main_forms">
+<div class="main_form_technology">
+<form action="/" method="POST">
+  $:view_technology()
+</form>
+</div>
+<div class="main_form_tethering">
+<form action="/" method="POST">
+  $:view_tethering()
+</form>
+</div>
+<hr>
+<div class="main_form_rescan">
+<div class="main_form_rescan_label">
+List of currently found services
+</div>
+<div class="main_form_rescan_button">
+<form action="/" method="POST">
+  $:view_rescan()
+</form>
+</div>
+</div>
+<div class="main_form_rescan_devider">
+<hr>
+</div>
+</div>
+$:page
+</div>
+

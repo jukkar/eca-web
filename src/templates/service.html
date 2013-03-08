@@ -1,0 +1,39 @@
+$def with (path, properties, state)
+
+$var ignore_layout: yes
+
+<div class="properties">
+  $# Traffic lights for the status
+  <div class="status">
+    $ status = "unknown"
+    $if state == "online":
+       $ status = "connected-online"
+    $elif state == "ready":
+       $ status = "connected-ready"
+    $elif state == "idle":
+       $ favorite = get_value(properties, "Favorite")
+       $if favorite == "true":
+          $ status = "not-connected"
+       $else:
+          $ type = get_value(properties, "Type")
+          $if type == "vpn":
+              $ status = "not-connected-vpn"
+          $else:
+              $ status = "unknown"
+    $elif state == "failure":
+       $ status = "connect-failed"
+    <a href="#" class="$status"></a>
+  </div>
+
+  <div class="service_link">
+    $:render.name(get_value(properties, "Name"), path[path.rfind("/") + 1:], state)
+  </div>
+  <div class="values">
+    $:render.property("ID", path[path.rfind("/") + 1:])
+    $:render.property("Type", get_value(properties, "Type"))
+    $:render.property("Security", get_value(properties, "Security"))
+    $:render.property("Favorite", get_value(properties, "Favorite"))
+$#    $for key in properties.keys():
+$#	$:render.property(key, get_value(properties, key))
+  </div>
+</div>

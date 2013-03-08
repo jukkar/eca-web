@@ -1,0 +1,15 @@
+$def with (page, form, pagetitle=None)
+
+<div class="cellular_page">
+<title>\
+$if pagetitle: $pagetitle\
+</title>
+<h2>$pagetitle</h2>
+<div class="cellular_form">
+$#<form action="/" method="POST">
+$#  $:form.render()
+$#</form>
+</div>
+$:page
+</div>
+

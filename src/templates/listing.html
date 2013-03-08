@@ -1,0 +1,15 @@
+$def with (services)
+
+$var ignore_layout: yes
+
+<div class='listing'>
+$for path, properties in services:
+	<div class='row'>
+	  $ state = get_value(properties, "State")
+	  $if state == "online" or state == "ready":
+		<div class='row-connected'>$:render.service(path, properties, state)</div>
+          $else:
+		<div class='row-not-connected'>$:render.service(path, properties, state)</div>
+	  <p>
+	</div>
+</div>

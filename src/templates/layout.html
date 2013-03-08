@@ -1,0 +1,16 @@
+$def with (content)
+$# Avoid loading stylesheet etc for each service in the service list
+$if content.get("ignore_layout", None) == None:
+  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+  <html>
+  <head>
+    <link rel="stylesheet" href="/static/eca.css" type="text/css" media="screen" charset="utf-8"/>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+    <script type="text/javascript" src="/static/util.js"></script>
+  </head>
+  <body>
+    $:content
+  </body>
+  </html>
+$else:
+  $:content

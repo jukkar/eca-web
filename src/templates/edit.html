@@ -1,0 +1,79 @@
+$def with (pagetitle, service_id, form)
+
+<div class="edit">
+  <title>\
+    $if pagetitle: $pagetitle - $service_id\
+  </title>
+  $ properties = get_properties(service_id)
+
+  $if not properties.keys():
+	<div class="error">Service $service_id has expired.</div>
+  $else:
+	$ name = get_value(properties, "Name")
+	$ proxy_method = get_dict_value(properties, "Proxy.Configuration", "Method")
+	$if proxy_method == "":
+		$ proxy_method = "auto"
+	$ ipv4_method = get_dict_value(properties, "IPv4.Configuration", "Method")
+	$if ipv4_method == "":
+		$ ipv4_method = "dhcp"
+	$ ipv6_method = get_dict_value(properties, "IPv6.Configuration", "Method")
+	$if ipv6_method == "":
+		$ ipv6_method = "auto"
+	<script type="text/javascript">
+	  function updateFields() {
+		show_hide_proxy_fields("$proxy_method");
+		show_hide_ipv4_fields("$ipv4_method");
+		show_hide_ipv6_fields("$ipv6_method");
+	  }
+	  window.onload = updateFields;
+	</script>
+
+	<h1>Edit service&emsp;$name / $service_id</h1>
+
+	<div class="edit_property">
+	  <form method="POST">
+	    $ rendered = form.render()
+	    $:restyle(rendered)
+	  </form>
+
+	  $ state = get_value(properties, "State")
+	  $if state == "online" or state == "ready":
+	      <table>
+		<caption class="activeSettingsCaption">Currently active settings from connected service</caption>
+		<tr><th><label for="domains">Domains</label></th>
+		  <td>$:get_str_value(properties, "Domains")</td>
+		<tr><th><label for="nameservers">Nameservers</label></th>
+		  <td>$:get_str_value(properties, "Nameservers")</td>
+		<tr><th><label for="timeservers">Timeservers</label></th>
+		  <td>$:get_str_value(properties, "Timeservers")</td>
+		<tr><th><label for="proxyurl">Proxy URL</label></th>
+		  <td>$:get_dict_value(properties, "Proxy", "URL")</td>
+		<tr><th><label for="proxyexcludes">Proxy Excludes</label></th>
+		  <td>$:get_dict_value(properties, "Proxy", "Excludes")</td>
+		<tr><th><label for="proxyservers">Proxy Servers</label></th>
+		  <td>$:get_dict_value(properties, "Proxy", "Servers")</td>
+		</tr>
+		<tr><th><label for="ipv4address">IPv4 Address</label></th>
+		  <td>$:get_dict_value(properties, "IPv4", "Address")</td>
+		</tr>
+		<tr><th><label for="ipv4netmask">IPv4 Netmask</label></th>
+		  <td>$:get_dict_value(properties, "IPv4", "Netmask")</td>
+		</tr>
+		<tr><th><label for="ipv4gateway">IPv4 Gateway</label></th>
+		  <td>$:get_dict_value(properties, "IPv4", "Gateway")</td>
+		</tr>
+		<tr><th><label for="ipv6address">IPv6 Address</label></th>
+		  <td>$:get_dict_value(properties, "IPv6", "Address")</td>
+		</tr>
+		<tr><th><label for="ipv6netmask">IPv6 Prefix Length</label></th>
+		  <td>$:get_dict_value(properties, "IPv6", "PrefixLength")</td>
+		</tr>
+		<tr><th><label for="ipv6gateway">IPv6 Gateway</label></th>
+		  <td>$:get_dict_value(properties, "IPv6", "Gateway")</td>
+		</tr>
+		<tr><th><label for="ipv6privacy">IPv6 Privacy</label></th>
+		  <td>$:get_dict_value(properties, "IPv6", "Privacy")</td>
+		</tr>
+	      </table>
+	</div>
+</div>

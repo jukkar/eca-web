@@ -1,0 +1,11 @@
+$def with (devices)
+
+$var ignore_layout: yes
+
+<div class='bluetooth_listing'>
+$for path, properties in devices:
+	<div class='row'>
+	  <div class='row-bt'>$:render.bt_device(path, properties)</div>
+	  <p>
+	</div>
+</div>
