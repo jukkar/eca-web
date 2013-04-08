@@ -279,6 +279,6 @@ session = web.session.Session(app, web.session.DiskStore('sessions'),
 
 if __name__ == "__main__":
     _dir = os.path.realpath(__file__)
-    app.internalerror = web.debugerror
+    #app.internalerror = web.debugerror
     app.run()
 
