@@ -62,7 +62,7 @@ if web.config.get('_session') is None:
 else:
     session = web.config._session
 
-allowed_users_file = "/etc/eca/users"
+allowed_users_file = "/etc/eca-web/users"
 
 allowed = get_allowed_users(allowed_users_file)
 
