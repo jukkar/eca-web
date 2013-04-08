@@ -127,6 +127,10 @@ def get_tethering_status(technology_type):
 			else:
 				return status
 
+	if technology_type == "wifi":
+		return (None, "", "")
+	return None
+
 def set_tethering_status(technology_type, new_status, ssid = None,
 			 passphrase = None):
 	path = "/net/connman/technology/" + technology_type

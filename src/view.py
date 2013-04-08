@@ -18,6 +18,9 @@ def main_screen():
     tethering.ethernet= get_tethering_status("ethernet")
     tethering.bluetooth = get_tethering_status("bluetooth")
 
+    if tethering.wifi== None:
+        tethering.wifi = "OFF"
+
     if tethering.ethernet== None:
         tethering.ethernet = "OFF"
 
