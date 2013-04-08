@@ -1,9 +1,25 @@
 import dbus
 import re
 
-def get_allowed_users():
-	# TODO: read the values from the file
-	return [('admin','admin')]
+def get_allowed_users(filename):
+	try:
+		with open(filename) as f:
+			content = f.readlines()
+	except:
+		return []
+
+	f.close()
+
+	users = []
+	for line in content:
+		if line.startswith("#"):
+			next
+		splitted = line.rstrip('\n').split(" ", 1)
+		try:
+			users.append((splitted[0], splitted[1]))
+		except:
+			return []
+	return users
 
 def extract_values(values):
 	val = "{"

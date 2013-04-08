@@ -25,6 +25,7 @@ template_sources = \
 	src/templates/error.html \
 	src/templates/login_error.html \
 	src/templates/layout.html \
+	src/templates/new_login.html \
 	src/templates/login.html \
 	src/templates/edit.html \
 	src/templates/logout.html \

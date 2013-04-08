@@ -1,5 +1,6 @@
 import os
 import time
+import hashlib, uuid
 import web
 from web import form
 import view
@@ -26,6 +27,7 @@ def dir():
 urls = (
     '/', 'Index',
     '/login', 'Login',
+    '/new_login', 'NewLogin',
     '/logout', 'Logout',
     '/edit/(.+)', 'Edit',
     '/bluetooth', 'Bluetooth',
@@ -60,13 +62,31 @@ if web.config.get('_session') is None:
 else:
     session = web.config._session
 
-allowed = get_allowed_users()
+allowed_users_file = "/etc/eca/users"
+
+allowed = get_allowed_users(allowed_users_file)
+
+def is_allowed():
+    global allowed
+    if allowed:
+        return True
+    else:
+        allowed = get_allowed_users(allowed_users_file)
+        if allowed:
+            return True
+        return False
 
 def logged():
     if session.get("logged_in"):
         return True
     else:
         return False
+
+new_login_form = form.Form(
+    form.Textbox('newuser', form.notnull, description="Username"),
+    form.Password('newpasswd', form.notnull, description="Password"),
+    form.Button('create', description="Create user"),
+    )
 
 class Login:
     login_form = form.Form(
@@ -76,24 +96,54 @@ class Login:
         )
 
     def GET(self):
-        if logged():
+        name_ok = is_allowed()
+        if name_ok and logged():
             raise web.seeother("/")
         else:
+            if not name_ok:
+                return render.new_login(new_login_form(),
+                                        "Create a username for yourself")
             return render.login(self.login_form(),
                                 "Please authenticate yourself")
 
     def POST(self):
+        if is_allowed() and logged():
+            raise web.seeother("/")
         if not self.login_form.validates():
             return render.login(self.login_form,
                                 "Login failed. Please authenticate yourself")
 
         username, password = web.input().user, web.input().passwd
-        if (username,password) in allowed:
+        salt = ""
+        password_without_hash = ""
+        for userpwd in allowed:
+            (allowed_username, hashed_password) = userpwd
+            if username == allowed_username:
+                salt = hashed_password[:32]
+                password_without_hash = hashed_password[32:]
+                break
+        hashed_password = hashlib.sha512(password + salt).hexdigest()
+        if (username,salt + hashed_password) in allowed:
             session.logged_in = True
             return view.main_screen()
         else:
             session.logged_in = False
             return render.login_error()
+
+class NewLogin:
+    def POST(self):
+        if not new_login_form.validates():
+            return render.new_login(new_login_form,
+                                "Cannot validate your credentials, try again.")
+
+        f = open(allowed_users_file,'w')
+        salt = uuid.uuid4().hex
+        hashed_password = hashlib.sha512(web.input().newpasswd + salt).hexdigest()
+
+        f.write(web.input().newuser + " " + salt + hashed_password + "\n")
+        f.close()
+        allowed = get_allowed_users(allowed_users_file)
+        raise web.seeother('/login')
 
 class Logout:
     def GET(self):

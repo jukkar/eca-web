@@ -1,0 +1,17 @@
+$def with (form, pagetitle=None)
+
+<link rel="stylesheet" href="static/eca.css" type="text/css" media="screen" charset="utf-8"/>
+
+<div class="new_login">
+<title>\
+$if pagetitle: $pagetitle\
+</title>
+
+<h1>\
+$if pagetitle: $pagetitle\
+</title>
+<br>
+<form action="/new_login" method="POST">
+  $:form.render()
+</form>
+</div>
