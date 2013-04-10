@@ -1,6 +1,6 @@
 import os
 import time
-import hashlib, uuid
+import crypt, uuid
 import web
 from web import form
 import view
@@ -114,11 +114,12 @@ class Login:
         for userpwd in allowed:
             (allowed_username, hashed_password) = userpwd
             if username == allowed_username:
-                salt = hashed_password[:32]
-                password_without_hash = hashed_password[32:]
+                split_password = hashed_password.rsplit("$", 1)
+                salt = split_password[0] + "$"
+                password_without_hash = split_password[1]
                 break
-        hashed_password = hashlib.sha512(password + salt).hexdigest()
-        if (username,salt + hashed_password) in allowed:
+        hashed_password = crypt.crypt(password, salt)
+        if (username, hashed_password) in allowed:
             session.logged_in = True
             return view.main_screen()
         else:
@@ -132,10 +133,10 @@ class NewLogin:
                                 "Cannot validate your credentials, try again.")
 
         f = open(allowed_users_file,'w')
-        salt = uuid.uuid4().hex
-        hashed_password = hashlib.sha512(web.input().newpasswd + salt).hexdigest()
+        salt = "$6$" + uuid.uuid4().hex + "$"
+        hashed_password = crypt.crypt(web.input().newpasswd, salt)
 
-        f.write(web.input().newuser + " " + salt + hashed_password + "\n")
+        f.write(web.input().newuser + " " + hashed_password + "\n")
         f.close()
         allowed = get_allowed_users(allowed_users_file)
         raise web.seeother('/login')
