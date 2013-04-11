@@ -187,13 +187,18 @@ class Edit:
         vpn = is_vpn_service(format(service))
         if is_known_service(format(service)) and not vpn:
             if immutable == True:
-                return render.error("Service %s is immutable. Please edit correct config file in /var/lib/connman instead." % format(service))
+                return render.error("Service %s is immutable." % format(service),
+                                    "Please edit correct config file in <samp>/var/lib/connman</samp> instead.")
             update_fields(format(service))
             return render.edit("Edit Service", format(service), edit.form)
         elif vpn:
             if immutable == True:
-                return render.error("VPN service %s is immutable. Please edit correct config file in /var/lib/connman-vpn instead." % format(service))
-            return render.error("VPN services cannot be edited. Place config file to /var/lib/connman-vpn to provision a VPN service")
+                return render.error("VPN service <samp>%s</samp> is immutable."  % format(service),
+                                    "Please edit correct config file in <samp>/var/lib/connman-vpn</samp> instead.")
+            return render.error("VPN services cannot be edited.",
+                                "Place config file to <samp>/var/lib/connman-vpn</samp> to provision a VPN service.",
+                                "See <a href='http://git.kernel.org/cgit/network/connman/connman.git/tree/doc/config-format.txt'>config file format specification</a> for details.")
+
         else:
             securities = get_security(format(service))
             if "psk" in securities:
@@ -207,9 +212,11 @@ class Edit:
                 return render.edit("Connect Service", format(service),
                                    connect.wep_form)
             elif "ieee8021x" in securities:
-                return render.error("WPA Enterprise services cannot be edited. Place config file to /var/lib/connmann to provision a 802.1x service")
+                return render.error("WPA Enterprise services cannot be edited.",
+                                    "Place config file to <samp>/var/lib/connman</samp> to provision a 802.1x service.",
+                                    "See <a href='http://git.kernel.org/cgit/network/connman/connman.git/tree/doc/config-format.txt'>config file format specification</a> for details.")
             else:
-                return render.error("Cannot edit service %s %s" % (format(service), securities))
+                return render.error("Cannot edit service <samp>%s</samp> <samp>%s</samp>" % (format(service), securities))
 
     def POST(self, service):
         if not logged():
