@@ -8,17 +8,14 @@ passphrase = None
 ethernet = "OFF"
 bluetooth = "OFF"
 
-vssid = form.regexp(r".{1,32}$", "Must be between 1 and 32 characters")
-vpassphrase = form.regexp(r".{8,64}$", "Must be between 8 and 64 characters")
-
 form = web.form.Form(
     web.form.Radio('wifi', args=['ON', 'OFF'],
                    value=wifi,
-                   description="Activate WLAN tethering"),
-    web.form.Textbox('ssid', vssid, value=ssid,
-                     description="WLAN access point SSID:"),
-    web.form.Textbox('passphrase', vpassphrase, value=passphrase,
-                     description="WLAN access point passphrase:"),
+                   description="Activate Wlan tethering"),
+    web.form.Textbox('ssid', value=ssid,
+                     description="Wlan access point SSID:"),
+    web.form.Textbox('passphrase', value=passphrase,
+                     description="Wlan access point passphrase:"),
     web.form.Radio('ethernet', args=['ON', 'OFF'],
                    value=ethernet,
                    description="Activate ethernet tethering"),

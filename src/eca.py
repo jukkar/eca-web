@@ -159,10 +159,35 @@ class Index:
             raise web.seeother("/login")
         input = web.input()
         if input.Submit == "tethering":
-            if not tethering.form.validates():
-                return render.base(view.listing(),
-                                   title, logout)
+            if input["wifi"] == "ON":
+                # Only validating the form if Wlan tethering is turned ON
+                input.valid = True
+
+                try:
+                    len_passphrase = len(input["passphrase"])
+                except:
+                    len_passphrase = 0;
+
+                try:
+                    len_ssid = len(input["ssid"])
+                except:
+                    len_ssid = 0;
+
+                if len_ssid == 0:
+                    tethering.form.note = "Wlan SSID missing"
+                    input.valid = False
+                elif len_passphrase < 8 or len_passphrase > 64:
+                    tethering.form.note = "Passphrase must be between 8 and 64 characters"
+                    input.valid = False
+
+                if not input.valid:
+                    return render.base(view.listing(),
+                                       title, logout)
+                else:
+                    tethering.form.note = ""
+                    tethering.update(input)
             else:
+                tethering.form.note = ""
                 tethering.update(input)
 
         elif input.Submit == "technology":
