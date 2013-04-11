@@ -19,7 +19,8 @@ static_sources = \
 	src/static/util.js \
 	src/static/eca.css \
 	src/static/status.png \
-	src/static/favicon.ico
+	src/static/favicon.ico \
+	src/static/help.html
 
 template_sources = \
 	src/templates/error.html \

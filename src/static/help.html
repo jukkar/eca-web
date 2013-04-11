@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/eca.css" type="text/css" media="screen" charset="utf-8"/>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+    <script type="text/javascript" src="/static/util.js"></script>
+  </head>
+  <body>
+    <h2>Embedded Connectivity Appliance</h2>
+    <h3>Technology</h3>
+    <p>You can control the status of radios in the technology form. By default all the radios are ON. If you want to turn all radios OFF, you can set <i>Flight mode</i> ON.
+    <p>The <i>Wired</i> technology refers to ethernet devices in the host.
+    <p>The <i>Wifi</i> technology refers to wireless lan devices found in the host.
+    <p>The <i>Cellular</i> technology refers to 3G modems found in the host.
+    <p>The <i>Bluetooth</i> technology refers to all Bluetooth devices found in the host.
+    <h3>Tethering</h3>
+    <p>The tethering form allows you to activate tethering i.e., access network
+      resources via this host.
+    <p>By activating Wlan tethering, you are creating a Wifi access point
+      with given SSID (network identifier). If you connect to this
+      tethering access point using your mobile device, you can access wired,
+      bluetooth or cellular networks from you mobile phone or other mobile
+      device.
+      <br>Note that once the AP has been created, it cannot be removed.
+      You are only allowed to turn Wlan tethering ON or OFF after that.
+    <p>Ethernet tethering e.g., connecting your laptop to this host via
+      ethernet and accessing cellular, wifi or bluetooth networks is not yet
+      supported.
+    <p>Bluetooth tethering allows you to create a bluetooth access point
+      and access network resources via your bluetooth enabled mobile phone.
+    <h3>Service list</h3>
+    <p>The rest of the screen shows the currently available network services.
+      You can force a rescan by pressing the <i>Rescan</i> button, this will
+      cause Wifi networks to be searched.
+    <p>In the service list the colors indicate following status:
+      <table>
+	<tr>
+	  <td>
+	      <a href="#" class="connected-online"></a>
+	  </td>
+	  <td>
+	      The service is connected to Internet (Online)
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	      <a href="#" class="connected-ready"></a>
+	  </td>
+	  <td>
+	    The service is connected but Internet connection cannot be
+	    confirmed (Ready)
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	      <a href="#" class="not-connected"></a>
+	  </td>
+	  <td>
+	    The service is currently not connected but it is known and
+	    connectable (Idle)
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	      <a href="#" class="not-connected-vpn"></a>
+	  </td>
+	  <td>
+	    The VPN service is currently not connected but it is
+	    connectable (Idle)
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	      <a href="#" class="unknown"></a>
+	  </td>
+	  <td>
+	    The service is not known i.e., it is currently not provisioned.
+	    If you want to connect to it, you must know credentials to access
+	    it.
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	      <a href="#" class="connect-failed"></a>
+	  </td>
+	  <td>
+	    The last connection attempt to this service failed.
+	    If the service is known one, then the auto-connect is temporarily
+	    turned off for this service.
+	    If the service was unknown and you tried to connect to it, you
+	    probably supplied invalid credentials and the connection attempt
+	    failed.
+	  </td>
+	</tr>
+      </table>
+      <p>You can edit some parameters of a known service. The service
+	becomes known if you have successfully connected to it once.
+	Just select the service link righ of the colored status light.
+  </body>
+</html>

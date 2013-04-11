@@ -1,11 +1,15 @@
-$def with (page, pagetitle=None, logout=None)
+$def with (page, pagetitle=None, logout=None, help=None)
 
 <div class="base">
 <title>\
 $if pagetitle: $pagetitle\
 </title>
-<h2><a href="/logout">\
+<h2>
+<a class="left-link" href="/logout">\
 $if logout: $logout\
+</a>
+<a class="right-link" href="JavaScript:helpPopup('/static/help.html');">\
+$if help: $help\
 </a>
 </h2>
 <div class="main_forms">

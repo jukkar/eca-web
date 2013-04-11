@@ -64,3 +64,13 @@ function show_hide_ipv6_fields(mySel) {
 	break;
     }
 }
+
+
+function helpPopup(url) {
+    popupWindow = window.open(
+	url,
+	'popUpWindow',
+	'height=800,width=600,left=10,top=10,resizable=yes,scrollbars=yes,'+
+	    'toolbar=yes,menubar=no,location=no,directories=no,status=yes'
+    )
+}

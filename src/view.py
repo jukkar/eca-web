@@ -1,7 +1,7 @@
 import web
 import config
 import dbus
-from eca import render, title, logout
+from eca import render, title, logout, help
 from util import get_value, get_properties, get_tethering_status, \
     get_offlinemode_status, get_technology_status, get_services
 import technology
@@ -48,4 +48,4 @@ def main_screen():
     technology.form.get('bluetooth').value = technology.bluetooth
 
     return render.base(listing(),
-                       title, logout)
+                       title, logout, help)

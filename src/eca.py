@@ -31,6 +31,7 @@ urls = (
 
 title = "ECA Configuration"
 logout = "ECA Configuration logout"
+help = "Help"
 
 t_globals = {
     'get_value' : get_value,
@@ -182,7 +183,7 @@ class Index:
 
                 if not input.valid:
                     return render.base(view.listing(),
-                                       title, logout)
+                                       title, logout, help)
                 else:
                     tethering.form.note = ""
                     tethering.update(input)
@@ -193,7 +194,7 @@ class Index:
         elif input.Submit == "technology":
             if not technology.form.validates():
                 return render.base(view.listing(),
-                                   title, logout)
+                                   title, logout, help)
             else:
                 technology.update(input)
 
