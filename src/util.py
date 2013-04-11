@@ -131,17 +131,20 @@ def get_tethering_status(technology_type):
 	tech_path = "/net/connman/technology/" + technology_type
 	for path, properties in get_technology_properties():
 		if path == tech_path:
-			if properties["Tethering"] == dbus.Boolean(True):
-				status = "ON"
-			else:
-				status = "OFF"
+			try:
+				if properties["Tethering"] == dbus.Boolean(True):
+					status = "ON"
+				else:
+					status = "OFF"
 
-			if technology_type == "wifi":
-				return (status,
-					properties["TetheringIdentifier"],
-					properties["TetheringPassphrase"])
-			else:
-				return status
+				if technology_type == "wifi":
+					return (status,
+						properties["TetheringIdentifier"],
+						properties["TetheringPassphrase"])
+				else:
+					return status
+			except KeyError, error:
+				return ("OFF", "", "")
 
 	if technology_type == "wifi":
 		return (None, "", "")
