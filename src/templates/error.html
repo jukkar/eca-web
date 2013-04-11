@@ -1,5 +1,9 @@
-$def with (msg)
+$def with (msg, msg2=None, msg3=None)
 
 <div class="error">
-  Error: $msg<br>
+  Error: $:msg<br>
+  $if msg2:
+     $:msg2<br>
+  $if msg3:
+     $:msg3<br>
 </div>
