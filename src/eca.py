@@ -271,6 +271,10 @@ class Edit:
             err = connect.service(input, format(service))
             if err != None:
                 return render.error(err)
+        elif input.Submit == "disconnect":
+            err = connect.disconnect_service(input, format(service))
+            if err != None:
+                return render.error(err)
         elif input.Submit == "new_psk":
             if input.passphrase == "":
                 return render.edit("Connect Service", format(service),

@@ -60,6 +60,7 @@ form = web.form.Form(
 
     form.Button("Submit", type="submit", value="edit", html="Save"),
     form.Button("Submit", type="submit", value="connect", html="Connect"),
+    form.Button("Submit", type="submit", value="disconnect", html="Disconnect"),
     form.Button("Submit", type="submit", value="remove", html="Remove")
 )
 
