@@ -4,14 +4,17 @@ from web import form
 import config
 import dbus
 from util import get_properties, get_raw_value, get_value, get_str_value, \
-    get_dict_value, get_service, get_security
+    get_dict_value, get_service, get_security, change_cellular_pin, \
+    set_cellular_pin, activate_cellular
 
 vssid = form.regexp(r".{1,32}$", "Must be between 1 and 32 characters")
 vprefix = form.Validator('Must be between 0 and 128',
                           lambda x: x=="" or int(x)>=0 and int(x)<=128)
 vallowempty = form.Validator('', lambda x: x=="")
+vpin = form.regexp(r".{4,8}$", "Must be between 4 and 8 characters")
 
 form = web.form.Form(
+    form.Hidden('servicetype', onload="show_cellular_fields(this);"),
     form.Radio('autoconnect', args=["Yes", "No"], description="Autoconnect"),
     form.Textbox("domains", class_="textEntry", size=64, description="Domains"),
     form.Textbox("timeservers", class_="textEntry", size=64,
@@ -19,14 +22,16 @@ form = web.form.Form(
     form.Textbox("nameservers", class_="textEntry", size=64,
                  description="Nameservers"),
     form.Dropdown("ipv4method",
-                  [('dhcp','DHCP'),('manual','Manual'),('off','Off')],
+                  [('fixed','Fixed'),('dhcp','DHCP'),('manual','Manual'),
+                   ('off','Off')],
                   onChange="show_hide_ipv4_fields(this);",
                   description="IPv4 configuration"),
     form.Textbox("ipv4address", size=15, description="IPv4 address"),
     form.Textbox("ipv4netmask", size=15, description="IPv4 netmask"),
     form.Textbox("ipv4gateway", size=15, description="IPv4 gateway"),
     form.Dropdown("ipv6method",
-                  [('auto','Automatic'),('manual','Manual'),('off','Off')],
+                  [('fixed','Fixed'),('auto','Automatic'),('manual','Manual'),
+                   ('off','Off')],
                   onChange="show_hide_ipv6_fields(this);",
                   description="IPv6 configuration"),
     form.Textbox("ipv6address", size=46, description="IPv6 address"),
@@ -48,6 +53,10 @@ form = web.form.Form(
                  class_="textEntry", id="proxy-servers"),
     form.Textbox("proxyexcludes", size=64, description="Proxy host excluded",
                  class_="textEntry", id="proxy-excludes"),
+    form.Textbox("oldpin", size=8, description="Old PIN code",
+                 class_="textEntry", id="oldpin"),
+    form.Textbox("pin", size=8, description="PIN code",
+                 class_="textEntry", id="pin"),
 
     form.Button("Submit", type="submit", value="edit", html="Save"),
     form.Button("Submit", type="submit", value="connect", html="Connect"),
@@ -58,6 +67,9 @@ def update_fields(service_id):
     properties = get_properties(service_id)
     if not properties.keys():
         return
+
+    form.get('pin').value = ""
+    form.get('oldpin').value = ""
 
     if get_value(properties, "AutoConnect") == "true":
         autoconn = "Yes"
@@ -188,76 +200,96 @@ def update_service(input, service_id):
 
     service = get_service(service_id)
 
-    if input.autoconnect == "Yes":
-        autoconnect = True
-    else:
-        autoconnect = False
-    (value_changed, error) = change(service, properties, "AutoConnect",
-                                    autoconnect)
-    if not value_changed:
-        return service_not_found(service_id, error, "AutoConnect")
+    try:
+        if input.autoconnect == "Yes":
+            autoconnect = True
+        else:
+            autoconnect = False
+        (value_changed, error) = change(service, properties, "AutoConnect",
+                                        autoconnect)
+        if not value_changed:
+            return service_not_found(service_id, error, "AutoConnect")
+    except:
+        pass
 
-    (value_changed, error) = change(service, properties,
-                                   "Domains.Configuration",
-                                   input.domains,
-                                   dbus.Array([input.domains],
-                                              signature=dbus.Signature('s')))
-    if not value_changed:
-        return service_not_found(service_id, error, "Domains")
+    try:
+        (value_changed, error) = change(service, properties,
+                                        "Domains.Configuration",
+                                        input.domains,
+                                        dbus.Array([input.domains],
+                                                signature=dbus.Signature('s')))
+        if not value_changed:
+            return service_not_found(service_id, error, "Domains")
+    except:
+        pass
 
-    (value_changed, error) = change(service, properties,
-                                    "Nameservers.Configuration",
-                                    input.nameservers,
-                                    dbus.Array([input.nameservers],
+    try:
+        (value_changed, error) = change(service, properties,
+                                        "Nameservers.Configuration",
+                                        input.nameservers,
+                                        dbus.Array([input.nameservers],
                                                signature=dbus.Signature('s')))
-    if not value_changed:
-        return service_not_found(service_id, error, "Nameservers")
+        if not value_changed:
+            return service_not_found(service_id, error, "Nameservers")
+    except:
+        pass
 
-    (value_changed, error) = change(service, properties,
-                                    "Timeservers.Configuration",
-                                    input.timeservers,
-                                    dbus.Array([input.timeservers],
+    try:
+        (value_changed, error) = change(service, properties,
+                                        "Timeservers.Configuration",
+                                        input.timeservers,
+                                        dbus.Array([input.timeservers],
                                                signature=dbus.Signature('s')))
-    if not value_changed:
-        return service_not_found(service_id, error, "Timeservers")
+        if not value_changed:
+            return service_not_found(service_id, error, "Timeservers")
+    except:
+        pass
 
-    if input.proxymethod == "auto":
-        if changed_dict(properties, "Proxy.Configuration", "URL",
-                        input.proxyurl):
-            proxy = { "Method": make_variant("auto") }
-            proxy["URL"] = make_variant(input.proxyurl)
-            try:
-                service.SetProperty("Proxy.Configuration", proxy)
-            except dbus.DBusException, error:
-                return service_not_found(service_id, error,
-                                         "Proxy URL setting failed")
+    try:
+        if input.proxymethod == "auto":
+            if changed_dict(properties, "Proxy.Configuration", "URL",
+                            input.proxyurl):
+                proxy = { "Method": make_variant("auto") }
+                proxy["URL"] = make_variant(input.proxyurl)
+                try:
+                    service.SetProperty("Proxy.Configuration", proxy)
+                except dbus.DBusException, error:
+                    return service_not_found(service_id, error,
+                                             "Proxy URL setting failed")
 
-    elif input.proxymethod == "manual":
-        set_property = False
-        proxy = { "Method": make_variant("manual") }
-        if changed_dict(properties, "Proxy.Configuration", "Servers",
-                        input.proxyservers):
-            proxy["Servers"] = split_string(input.proxyservers)
-            set_property = True
+        elif input.proxymethod == "manual":
+            set_property = False
+            proxy = { "Method": make_variant("manual") }
+            if changed_dict(properties, "Proxy.Configuration", "Servers",
+                            input.proxyservers):
+                proxy["Servers"] = split_string(input.proxyservers)
+                set_property = True
 
-        if changed_dict(properties, "Proxy.Configuration", "Excludes",
+            if changed_dict(properties, "Proxy.Configuration", "Excludes",
                         input.proxyexcludes):
-            proxy["Excludes"] = split_string(input.proxyexcludes)
-            set_property = True
+                proxy["Excludes"] = split_string(input.proxyexcludes)
+                set_property = True
 
-        if set_property:
-            try:
-                service.SetProperty("Proxy.Configuration",
-                                    dbus.Dictionary(proxy, signature='sv'))
-            except dbus.DBusException, error:
-                return service_not_found(service_id, error,
-                                         "Manual Proxy setting failed")
+            if set_property:
+                try:
+                    service.SetProperty("Proxy.Configuration",
+                                        dbus.Dictionary(proxy, signature='sv'))
+                except dbus.DBusException, error:
+                    return service_not_found(service_id, error,
+                                             "Manual Proxy setting failed")
+    except:
+        pass
 
-    if input.ipv4method == "manual":
+    try:
+        ipv4method = input.ipv4method
+    except:
+        ipv4method = "fixed"
+
+    if ipv4method == "manual":
         set_property = False
         ipv4 = { "Method": make_variant("manual") }
         if changed_dict(properties, "IPv4.Configuration", "Method",
-                        input.ipv4method):
+                        ipv4method):
             set_property = True
         if changed_dict(properties, "IPv4.Configuration", "Address",
                         input.ipv4address):
@@ -280,9 +312,9 @@ def update_service(input, service_id):
                 return service_not_found(service_id, error,
                                          "IPv4 manual setting failed")
 
-    elif input.ipv4method == "dhcp":
+    elif ipv4method == "dhcp":
         if changed_dict(properties, "IPv4.Configuration", "Method",
-                        input.ipv4method):
+                        ipv4method):
             ipv4 = { "Method": make_variant("dhcp") }
 
             try:
@@ -292,9 +324,9 @@ def update_service(input, service_id):
                 return service_not_found(service_id, error,
                                          "IPv4 dhcp setting failed")
 
-    elif input.ipv4method == "off":
+    elif ipv4method == "off":
         if changed_dict(properties, "IPv4.Configuration", "Method",
-                        input.ipv4method):
+                        ipv4method):
             ipv4 = { "Method": make_variant("off") }
 
             try:
@@ -304,12 +336,16 @@ def update_service(input, service_id):
                 return service_not_found(service_id, error,
                                          "IPv4 dhcp setting failed")
 
+    try:
+        ipv6method = input.ipv6method
+    except:
+        ipv6method = "fixed"
 
-    if input.ipv6method == "manual":
+    if ipv6method == "manual":
         set_property = False
         ipv6 = { "Method": make_variant("manual") }
         if changed_dict(properties, "IPv6.Configuration", "Method",
-                        input.ipv6method):
+                        ipv6method):
             set_property = True
         if changed_dict(properties, "IPv6.Configuration", "Address",
                         input.ipv6address):
@@ -332,11 +368,11 @@ def update_service(input, service_id):
                 return service_not_found(service_id, error,
                                          "IPv6 manual setting failed")
 
-    elif input.ipv6method == "auto":
+    elif ipv6method == "auto":
         set_property = False
         ipv6 = { "Method": make_variant("auto") }
         if changed_dict(properties, "IPv6.Configuration", "Method",
-                        input.ipv6method):
+                        ipv6method):
             set_property = True
 
         if changed_dict(properties, "IPv6.Configuration", "Privacy",
@@ -352,9 +388,9 @@ def update_service(input, service_id):
                 return service_not_found(service_id, error,
                                          "IPv6 auto setting failed")
 
-    elif input.ipv6method == "off":
+    elif ipv6method == "off":
         if changed_dict(properties, "IPv6.Configuration", "Method",
-                        input.ipv6method):
+                        ipv6method):
             ipv6 = { "Method": make_variant("off") }
 
             try:
@@ -363,6 +399,32 @@ def update_service(input, service_id):
             except dbus.DBusException, error:
                 return service_not_found(service_id, error,
                                          "IPv6 off setting failed")
+
+    if input.servicetype == "cellular":
+        try:
+            favorite = service.GetProperty("Favorite")
+        except dbus.DBusException, error:
+            return service_not_found(service_id, error,
+                                     "Cannot get favorite status")
+        if favorite == True:
+            if input.oldpin == "":
+                return service_not_found(service_id, None, "Old PIN value must be set")
+            if len(input.oldpin) < 4 or len(input.oldpin) > 8:
+                return service_not_found(service_id, None, "Old PIN length must be betwen 4 and 8 characters")
+            if input.pin == "":
+                return service_not_found(service_id, None, "New PIN value must be set")
+            (ret, error, context) = change_cellular_pin(service_id, input.oldpin, input.pin)
+            if not ret:
+                return service_not_found(service_id, error, "PIN change failed")
+        else:
+            if input.pin == "":
+                return service_not_found(service_id, None, "PIN value must be set")
+            (ret, error, context) = set_cellular_pin(service_id, input.pin)
+            if not ret:
+                return service_not_found(service_id, error, "PIN set failed")
+        (ret, error, extra) = activate_cellular(context)
+        if not ret:
+                return service_not_found(service_id, error, extra)
 
     return None
 

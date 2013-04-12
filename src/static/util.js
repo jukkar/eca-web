@@ -36,6 +36,12 @@ function show_hide_ipv4_fields(mySel) {
 	document.getElementById('ipv4netmask').style.display = 'none';
 	document.getElementById('ipv4gateway').style.display = 'none';
 	break;
+    case 'fixed':
+	document.getElementById('ipv4address-id').style.display = 'none';
+	document.getElementById('ipv4netmask-id').style.display = 'none';
+	document.getElementById('ipv4gateway-id').style.display = 'none';
+	document.getElementById('ipv4method').disabled = true;
+	break;
     case 'manual':
 	document.getElementById('ipv4address').style.display = 'inline';
 	document.getElementById('ipv4netmask').style.display = 'inline';
@@ -57,10 +63,38 @@ function show_hide_ipv6_fields(mySel) {
 	document.getElementById('ipv6prefixlen').style.display = 'none';
 	document.getElementById('ipv6gateway').style.display = 'none';
 	break;
+    case 'fixed':
+	document.getElementById('ipv6address-id').style.display = 'none';
+	document.getElementById('ipv6prefixlen-id').style.display = 'none';
+	document.getElementById('ipv6gateway-id').style.display = 'none';
+	document.getElementById('ipv6method').disabled = true;
+	break;
     case 'manual':
 	document.getElementById('ipv6address').style.display = 'inline';
 	document.getElementById('ipv6prefixlen').style.display = 'inline';
 	document.getElementById('ipv6gateway').style.display = 'inline';
+	break;
+    }
+}
+
+
+function show_hide_cellular_fields(mySel, favorite) {
+    if (typeof mySel == 'object')
+	value = mySel.value;
+    else
+	value = mySel
+    switch (value) {
+    case 'cellular':
+	if (favorite != 'true') {
+	    document.getElementById('oldpin-id').style.display = 'none';
+	    document.getElementById('oldpin').disabled = true;
+	}
+	break;
+    default:
+	document.getElementById('pin-id').style.display = 'none';
+	document.getElementById('pin').style.display = 'none';
+	document.getElementById('oldpin-id').style.display = 'none';
+	document.getElementById('oldpin').style.display = 'none';
 	break;
     }
 }

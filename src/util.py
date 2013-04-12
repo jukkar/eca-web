@@ -310,6 +310,12 @@ def is_vpn_service(service_id):
 		return False
 	return get_value(properties, "Type") == "vpn"
 
+def is_cellular_service(service_id):
+	properties = get_properties(service_id)
+	if len(properties) == 0:
+		return False
+	return get_value(properties, "Type") == "cellular"
+
 def is_immutable_service(service_id):
 	properties = get_properties(service_id)
 	if len(properties) == 0:
@@ -324,3 +330,86 @@ def get_security(service_id):
 
 def get_bt_devices():
 	return []
+
+def get_service_type(service_id):
+	properties = get_properties(service_id)
+	if len(properties) == 0:
+		return ""
+	return get_value(properties, "Type")
+
+def get_ofono_context_from_service(service_id):
+	context_id = service_id.rsplit("_", 1)[1]
+	manager = dbus.Interface(dbus.SystemBus().get_object('org.ofono', '/'),
+				 'org.ofono.Manager')
+	modems = manager.GetModems()
+	for path, properties in modems:
+		if "org.ofono.ConnectionManager" not in properties["Interfaces"]:
+			continue
+		connman = dbus.Interface(bus.get_object('org.ofono', path),
+                                        'org.ofono.ConnectionManager')
+		contexts = connman.GetContexts()
+		for context_path, properties in contexts:
+			# ToBeFixedLater: we should not try to interpret the
+			# context id structure
+			if context_path == path + "/" + context_id:
+				return (path, context_path)
+	return (None, None)
+
+def change_cellular_pin(service_id, oldpin, newpin):
+	(path, context) = get_ofono_context_from_service(service_id)
+	if path == None:
+		return (False, None, None)
+
+	try:
+		simmanager = dbus.Interface(dbus.SystemBus().get_object('org.ofono',
+									path),
+					    'org.ofono.SimManager')
+		simmanager.ChangePin("pin", oldpin, newpin)
+		return (True, None, context)
+	except dbus.DBusException, error:
+		return (False, error, None)
+
+def set_cellular_pin(service_id, newpin):
+	(path, context) = get_ofono_context(service_id)
+	if path == None:
+		return (False, None, None)
+
+	try:
+		simmanager = dbus.Interface(dbus.SystemBus().get_object('org.ofono',
+									path),
+					    'org.ofono.SimManager')
+		simmanager.EnterPin("pin", newpin)
+		return (True, None, context)
+	except dbus.DBusException, error:
+		return (False, error, None)
+
+def activate_cellular(wanted_context_path):
+	bus = dbus.SystemBus()
+	manager = dbus.Interface(bus.get_object('org.ofono', '/'),
+				 'org.ofono.Manager')
+	modems = manager.GetModems()
+	for path, properties in modems:
+		if "org.ofono.ConnectionManager" not in properties["Interfaces"]:
+			continue
+
+		connman = dbus.Interface(bus.get_object('org.ofono', path),
+					 'org.ofono.ConnectionManager')
+		contexts = connman.GetContexts()
+		if (len(contexts) == 0):
+			return (False, None, "No context available")
+
+		for context_path, properties in contexts:
+			if context_path == wanted_context_path:
+				connman.SetProperty("Powered", dbus.Boolean(1))
+				context = dbus.Interface(bus.get_object('org.ofono',
+									context_path),
+							 'org.ofono.ConnectionContext')
+				try:
+					context.SetProperty("Active",
+							    dbus.Boolean(1),
+							    timeout = 100)
+					return (True, None, None)
+				except dbus.DBusException, e:
+					return (False, e, None)
+
+	return (False, None, "No %s context found" % wanted_context_path)

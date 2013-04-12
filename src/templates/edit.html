@@ -19,11 +19,15 @@ $def with (pagetitle, service_id, form)
 	$ ipv6_method = get_dict_value(properties, "IPv6.Configuration", "Method")
 	$if ipv6_method == "":
 		$ ipv6_method = "auto"
+	$ hidden = form.get("servicetype")
+	$ service_type = hidden.servicetype
+	$ favorite = get_value(properties, "Favorite")
 	<script type="text/javascript">
 	  function updateFields() {
 		show_hide_proxy_fields("$proxy_method");
 		show_hide_ipv4_fields("$ipv4_method");
 		show_hide_ipv6_fields("$ipv6_method");
+		show_hide_cellular_fields("$service_type", "$favorite");
 	  }
 	  window.onload = updateFields;
 	</script>

@@ -7,7 +7,7 @@ import view
 import config
 from util import get_value, get_str_value, get_properties, get_allowed_users, \
     get_dict_value, restyle, is_known_service, is_vpn_service, get_security, \
-    is_immutable_service
+    is_immutable_service, is_cellular_service, get_service_type
 import technology
 import tethering
 import rescan
@@ -209,12 +209,16 @@ class Edit:
     def GET(self, service):
         if not logged():
             raise web.seeother("/login")
+        servicetype = get_service_type(format(service))
+        input_servicetype = edit.form.get("servicetype")
+        input_servicetype.servicetype = servicetype
         immutable = is_immutable_service(format(service))
         vpn = is_vpn_service(format(service))
         if is_known_service(format(service)) and not vpn:
             if immutable == True:
                 return render.error("Service %s is immutable." % format(service),
                                     "Please edit correct config file in <samp>/var/lib/connman</samp> instead.")
+
             update_fields(format(service))
             return render.edit("Edit Service", format(service), edit.form)
         elif vpn:
@@ -242,6 +246,11 @@ class Edit:
                                     "Place config file to <samp>/var/lib/connman</samp> to provision a 802.1x service.",
                                     "See <a href='http://git.kernel.org/cgit/network/connman/connman.git/tree/doc/config-format.txt'>config file format specification</a> for details.")
             else:
+                if servicetype == "cellular":
+                    return render.edit("Edit Cellular Service",
+                                       format(service),
+                                       edit.form)
+
                 return render.error("Cannot edit service <samp>%s</samp> <samp>%s</samp>" % (format(service), securities))
 
     def POST(self, service):
