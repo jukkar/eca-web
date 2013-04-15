@@ -30,7 +30,7 @@ urls = (
 )
 
 title = "ECA Configuration"
-logout = "ECA Configuration logout"
+logout = "Logout"
 help = "Help"
 
 t_globals = {
