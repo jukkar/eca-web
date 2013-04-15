@@ -7,7 +7,8 @@ import view
 import config
 from util import get_value, get_str_value, get_properties, get_allowed_users, \
     get_dict_value, restyle, is_known_service, is_vpn_service, get_security, \
-    is_immutable_service, is_cellular_service, get_service_type
+    is_immutable_service, is_cellular_service, get_service_type, \
+    set_root_password
 import technology
 import tethering
 import rescan
@@ -79,9 +80,13 @@ def logged():
         return False
 
 new_login_form = form.Form(
-    form.Textbox('newuser', form.notnull, description="Username"),
-    form.Password('newpasswd', form.notnull, description="Password"),
+    form.Textbox('newuser', form.notnull, description="Web UI username"),
+    form.Password('newpasswd', form.notnull, description="Web UI password"),
+    form.Password('root_passwd', form.notnull, description="Root user password"),
+    form.Password('root_newpasswd', form.notnull, description="Root user password again"),
     form.Button('create', description="Create user"),
+    validators = [ form.Validator("Root user passwords did not match.",
+                               lambda i: i.root_passwd == i.root_newpasswd)],
     )
 
 class Login:
@@ -98,7 +103,7 @@ class Login:
         else:
             if not name_ok:
                 return render.new_login(new_login_form(),
-                                        "Create a username for yourself")
+                                        "Create a username for yourself and set the root user password")
             return render.login(self.login_form(),
                                 "Please authenticate yourself")
 
@@ -132,6 +137,10 @@ class NewLogin:
         if not new_login_form.validates():
             return render.new_login(new_login_form,
                                 "Cannot validate your credentials, try again.")
+
+        msg = set_root_password(web.input().root_passwd)
+        if msg != "":
+            return render.new_login(new_login_form, msg)
 
         f = open(allowed_users_file,'w')
         salt = "$6$" + uuid.uuid4().hex + "$"

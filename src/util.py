@@ -1,5 +1,7 @@
 import dbus
 import re
+import shutil
+import crypt, uuid
 
 def get_allowed_users(filename):
 	try:
@@ -20,6 +22,56 @@ def get_allowed_users(filename):
 		except:
 			return []
 	return users
+
+def set_root_password(new_password):
+	filename = "/etc/shadow"
+	orig = filename + ".orig"
+	new = filename + ".new"
+
+	try:
+		with open(filename) as f:
+			content = f.readlines()
+	except:
+		return "Cannot open %s" % filename
+
+	f.close()
+
+	try:
+		f = open(new, "w")
+	except:
+		return "Cannot open %s" % new
+
+        salt = "$6$" + uuid.uuid4().hex + "$"
+        new_hashed_password = crypt.crypt(new_password, salt)
+
+	for line in content:
+		splitted = line.rstrip('\n').split(":", 2)
+		if splitted[0] == "root":
+			try:
+				f.write("root:" + new_hashed_password + ":" + splitted[2] + "\n")
+			except IOError, err:
+				f.close()
+				return "Cannot write password for the root user, %s" % err
+		else:
+			f.write(line)
+	f.close()
+
+	try:
+		shutil.move(filename, orig)
+	except:
+		return "Cannot move %s to %s" % (filename, orig)
+
+	try:
+		shutil.move(new, filename)
+	except:
+		return "Cannot move %s to %s" % (new, filename)
+
+	try:
+		shutil.copymode(orig, filename)
+	except:
+		return "Cannot set permissions of %s" % filename
+
+	return ""
 
 def extract_values(values):
 	val = "{"
