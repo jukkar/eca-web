@@ -20,6 +20,11 @@ import cellular
 
 web.config.debug = False
 
+_dir = "."
+
+def dir():
+    return _dir
+
 urls = (
     '/', 'Index',
     '/login', 'Login',
@@ -329,6 +334,7 @@ session = web.session.Session(app, web.session.DiskStore('sessions'),
                               initializer={ 'logged_in': False, })
 
 if __name__ == "__main__":
+    _dir = os.path.realpath(__file__)
     #app.internalerror = web.debugerror
     app.run()
 
