@@ -202,6 +202,25 @@ def get_tethering_status(technology_type):
 		return (None, "", "")
 	return None
 
+def set_bt_discoverable():
+	# Set the bluetooth device as discoverable so that we can find
+	# it while tethering
+	bus = dbus.SystemBus()
+	objman = dbus.Interface(bus.get_object("org.bluez", "/"),
+				"org.freedesktop.DBus.ObjectManager")
+	for path in objman.GetManagedObjects():
+		if path == "/org/bluez":
+			continue
+
+		adapter = dbus.Interface(bus.get_object("org.bluez", path),
+					 "org.freedesktop.DBus.Properties")
+		try:
+			adapter.Set("org.bluez.Adapter1", "Discoverable",
+				    dbus.Boolean(True))
+		except:
+			pass
+	return
+
 def set_tethering_status(technology_type, new_status, ssid = None,
 			 passphrase = None):
 	path = "/net/connman/technology/" + technology_type
@@ -225,6 +244,12 @@ def set_tethering_status(technology_type, new_status, ssid = None,
 				technology.SetProperty("TetheringPassphrase", passphrase)
 			except:
 				pass
+
+	elif technology_type == "bluetooth":
+		try:
+			set_bt_discoverable()
+		except:
+			pass
 
 	if new_status != None:
 		try:
