@@ -8,7 +8,8 @@ import config
 from util import get_value, get_str_value, get_properties, get_allowed_users, \
     get_dict_value, restyle, is_known_service, is_vpn_service, get_security, \
     is_immutable_service, is_cellular_service, get_service_type, \
-    set_root_password, set_bt_discoverable
+    set_root_password, set_bt_discoverable, set_cellular_pin, \
+    activate_cellular
 import technology
 import tethering
 import rescan
@@ -349,8 +350,22 @@ class Cellular:
     def POST(self):
         if not logged():
             raise web.seeother("/login")
+        if not cellular.form.validates():
+            return cellular.view()
+
         input = web.input()
+
+        (error, modem) = set_cellular_pin(input.pin)
+        if error != None:
+            return render.error("Setting PIN failed.<br>%s: %s" % (error._dbus_error_name, error.message))
+
+        (error, text) = activate_cellular()
+        if error != None:
+            return render.error("Activating cellular context failed. %s: %s" % (error._dbus_error_name, error.message))
+        if text != None:
+            return render.error(text)
         return view.main_screen()
+
 
 session = web.session.Session(app, web.session.DiskStore('sessions'),
                               initializer={ 'logged_in': False, })

@@ -4,8 +4,7 @@ from web import form
 import config
 import dbus
 from util import get_properties, get_raw_value, get_value, get_str_value, \
-    get_dict_value, get_service, get_security, change_cellular_pin, \
-    set_cellular_pin, activate_cellular
+    get_dict_value, get_service, get_security
 
 vssid = form.regexp(r".{1,32}$", "Must be between 1 and 32 characters")
 vprefix = form.Validator('Must be between 0 and 128',
@@ -14,7 +13,7 @@ vallowempty = form.Validator('', lambda x: x=="")
 vpin = form.regexp(r".{4,8}$", "Must be between 4 and 8 characters")
 
 form = web.form.Form(
-    form.Hidden('servicetype', onload="show_cellular_fields(this);"),
+    form.Hidden('servicetype'),
     form.Radio('autoconnect', args=["Yes", "No"], description="Autoconnect"),
     form.Textbox("domains", class_="textEntry", size=64, description="Domains"),
     form.Textbox("timeservers", class_="textEntry", size=64,
@@ -53,10 +52,6 @@ form = web.form.Form(
                  class_="textEntry", id="proxy-servers"),
     form.Textbox("proxyexcludes", size=64, description="Proxy host excluded",
                  class_="textEntry", id="proxy-excludes"),
-    form.Textbox("oldpin", size=8, description="Old PIN code",
-                 class_="textEntry", id="oldpin"),
-    form.Textbox("pin", size=8, description="PIN code",
-                 class_="textEntry", id="pin"),
 
     form.Button("Submit", type="submit", value="edit", html="Save"),
     form.Button("Submit", type="submit", value="connect", html="Connect"),
@@ -68,9 +63,6 @@ def update_fields(service_id):
     properties = get_properties(service_id)
     if not properties.keys():
         return
-
-    form.get('pin').value = ""
-    form.get('oldpin').value = ""
 
     if get_value(properties, "AutoConnect") == "true":
         autoconn = "Yes"
@@ -400,32 +392,6 @@ def update_service(input, service_id):
             except dbus.DBusException, error:
                 return service_not_found(service_id, error,
                                          "IPv6 off setting failed")
-
-    if input.servicetype == "cellular":
-        try:
-            favorite = service.GetProperty("Favorite")
-        except dbus.DBusException, error:
-            return service_not_found(service_id, error,
-                                     "Cannot get favorite status")
-        if favorite == True:
-            if input.oldpin == "":
-                return service_not_found(service_id, None, "Old PIN value must be set")
-            if len(input.oldpin) < 4 or len(input.oldpin) > 8:
-                return service_not_found(service_id, None, "Old PIN length must be betwen 4 and 8 characters")
-            if input.pin == "":
-                return service_not_found(service_id, None, "New PIN value must be set")
-            (ret, error, context) = change_cellular_pin(service_id, input.oldpin, input.pin)
-            if not ret:
-                return service_not_found(service_id, error, "PIN change failed")
-        else:
-            if input.pin == "":
-                return service_not_found(service_id, None, "PIN value must be set")
-            (ret, error, context) = set_cellular_pin(service_id, input.pin)
-            if not ret:
-                return service_not_found(service_id, error, "PIN set failed")
-        (ret, error, extra) = activate_cellular(context)
-        if not ret:
-                return service_not_found(service_id, error, extra)
 
     return None
 

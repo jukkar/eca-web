@@ -36,6 +36,7 @@ template_sources = \
 	src/templates/base.html \
 	src/templates/property.html \
 	src/templates/cellular.html \
+	src/templates/cellular_help.html \
 	src/templates/login_ok.html \
 	src/templates/bt_devices.html \
 	src/templates/bluetooth.html \

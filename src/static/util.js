@@ -78,28 +78,6 @@ function show_hide_ipv6_fields(mySel) {
 }
 
 
-function show_hide_cellular_fields(mySel, favorite) {
-    if (typeof mySel == 'object')
-	value = mySel.value;
-    else
-	value = mySel
-    switch (value) {
-    case 'cellular':
-	if (favorite != 'true') {
-	    document.getElementById('oldpin-id').style.display = 'none';
-	    document.getElementById('oldpin').disabled = true;
-	}
-	break;
-    default:
-	document.getElementById('pin-id').style.display = 'none';
-	document.getElementById('pin').style.display = 'none';
-	document.getElementById('oldpin-id').style.display = 'none';
-	document.getElementById('oldpin').style.display = 'none';
-	break;
-    }
-}
-
-
 function helpPopup(url) {
     popupWindow = window.open(
 	url,
