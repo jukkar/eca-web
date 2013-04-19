@@ -7,6 +7,7 @@ eca_web_sources = \
 	src/config.py \
 	src/edit.py \
 	src/agent-helper.py \
+	src/agent-helper-bt.py \
 	src/tethering.py \
 	src/view.py \
 	src/eca.py \
@@ -38,6 +39,7 @@ template_sources = \
 	src/templates/login_ok.html \
 	src/templates/bt_devices.html \
 	src/templates/bluetooth.html \
+	src/templates/bt_help.html \
 	src/templates/service.html
 
 EXTRA_DIST = \
