@@ -33,7 +33,10 @@ def update(input):
     if input.ssid != ssid or input.passphrase != passphrase:
         set_tethering_status("wifi", None, input.ssid, input.passphrase)
     if input.ethernet != ethernet:
-        set_tethering_status("ethernet", input.ethernet)
+        # Ethernet tethering is not yet supported
+        #set_tethering_status("ethernet", input.ethernet)
+        global ethernet
+        ethernet = "OFF"
     if input.bluetooth != bluetooth:
         set_tethering_status("bluetooth", input.bluetooth)
 
