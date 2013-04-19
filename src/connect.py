@@ -36,16 +36,6 @@ def setup_agent():
                   stdout=PIPE, stdin=PIPE, stderr=PIPE)
     return agent
 
-def read_answer(stdin):
-    out = ''
-    while True:
-        inchar = stdin.read(1)
-        if inchar != None:
-            out = out + str(inchar)
-        else:
-            break
-    return out
-
 def connect_psk(input, service_id, agent):
     (from_agent, to_agent, agent_stderr) = (agent.stdout, agent.stdin,
                                             agent.stderr)
