@@ -82,4 +82,5 @@ def disconnect_service(input, service_id):
     try:
         service.Disconnect()
     except dbus.DBusException, error:
-        print "%s: %s" % (error._dbus_error_name, error.message)
+        return error
+    return None

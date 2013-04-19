@@ -289,7 +289,8 @@ class Edit:
         elif input.Submit == "disconnect":
             err = connect.disconnect_service(input, format(service))
             if err != None:
-                return render.error(err)
+                return render.error("Disconnect failed", err._dbus_error_name,
+                                    err.message)
         elif input.Submit == "new_psk":
             if input.passphrase == "":
                 return render.edit("Connect Service", format(service),
