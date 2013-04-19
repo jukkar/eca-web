@@ -8,7 +8,7 @@ import config
 from util import get_value, get_str_value, get_properties, get_allowed_users, \
     get_dict_value, restyle, is_known_service, is_vpn_service, get_security, \
     is_immutable_service, is_cellular_service, get_service_type, \
-    set_root_password
+    set_root_password, set_bt_discoverable
 import technology
 import tethering
 import rescan
@@ -316,6 +316,28 @@ class Bluetooth:
         if not logged():
             raise web.seeother("/login")
         input = web.input()
+
+        if input.Submit == "stop_pairing":
+            set_bt_discoverable(False)
+            if bluetooth.stop_pairing() == True:
+                return render.error("Pairing stopped")
+            return render.error("Pairing process could not be stopped. Wait for timeout to happen.")
+
+	# Set the bluetooth device as discoverable so that we can find
+	# it while pairing
+        error = set_bt_discoverable(True)
+        if error == None:
+            if input.pin != "":
+                use_pin = True
+            else:
+                use_pin = False
+
+            status = bluetooth.start_pairing(use_pin, input.pin)
+            set_bt_discoverable(False)
+        else:
+            return render.error("%s: %s" % (error._dbus_error_name, error.message))
+        if status == False:
+            return render.error("Pairing failed")
         return view.main_screen()
 
 class Cellular:

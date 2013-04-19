@@ -2,6 +2,7 @@ import dbus
 import re
 import shutil
 import crypt, uuid
+from subprocess import call
 
 def get_allowed_users(filename):
 	try:
@@ -202,24 +203,30 @@ def get_tethering_status(technology_type):
 		return (None, "", "")
 	return None
 
-def set_bt_discoverable():
-	# Set the bluetooth device as discoverable so that we can find
-	# it while tethering
+def bluetooth_enable_ssp(adapter):
+	call(["hciconfig", adapter, "sspmode", "1"])
+
+def bluetooth_disable_ssp(adapter):
+	call(["hciconfig", adapter, "sspmode", "0"])
+
+def set_bt_discoverable(value):
 	bus = dbus.SystemBus()
-	objman = dbus.Interface(bus.get_object("org.bluez", "/"),
+	manager = dbus.Interface(bus.get_object("org.bluez", "/"),
 				"org.freedesktop.DBus.ObjectManager")
-	for path in objman.GetManagedObjects():
-		if path == "/org/bluez":
+	objects = manager.GetManagedObjects()
+	for path, interfaces in objects.iteritems():
+		if "org.bluez.Adapter1" not in interfaces.keys():
 			continue
 
-		adapter = dbus.Interface(bus.get_object("org.bluez", path),
+		adapter = dbus.Interface(bus.get_object("org.bluez",
+							path),
 					 "org.freedesktop.DBus.Properties")
 		try:
 			adapter.Set("org.bluez.Adapter1", "Discoverable",
-				    dbus.Boolean(True))
-		except:
-			pass
-	return
+				    dbus.Boolean(value))
+		except dbus.DBusException, error:
+			return error
+	return None
 
 def set_tethering_status(technology_type, new_status, ssid = None,
 			 passphrase = None):
@@ -244,12 +251,6 @@ def set_tethering_status(technology_type, new_status, ssid = None,
 				technology.SetProperty("TetheringPassphrase", passphrase)
 			except:
 				pass
-
-	elif technology_type == "bluetooth":
-		try:
-			set_bt_discoverable()
-		except:
-			pass
 
 	if new_status != None:
 		try:
