@@ -97,8 +97,8 @@ new_login_form = form.Form(
 
 class Login:
     login_form = form.Form(
-        form.Textbox('user', form.notnull, description="Username"),
-        form.Password('passwd', form.notnull, description="Password"),
+        form.Textbox('user', form.notnull, description="Web Username"),
+        form.Password('passwd', form.notnull, description="Web Password"),
         form.Button('Login', description="Login"),
         )
 
