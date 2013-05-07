@@ -40,7 +40,7 @@ def main_screen():
         technology.offlinemode = "OFF"
     technology.form.get('offlinemode').value = technology.offlinemode
 
-    (technology.wired, technology.wifi, technology.ethernet,
+    (technology.wired, technology.wifi, technology.cellular,
      technology.bluetooth) = get_technology_status()
     technology.form.get('wired').value = technology.wired
     technology.form.get('wifi').value = technology.wifi
