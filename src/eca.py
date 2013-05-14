@@ -225,8 +225,9 @@ class Edit:
         if not logged():
             raise web.seeother("/login")
         servicetype = get_service_type(format(service))
-        input_servicetype = edit.form.get("servicetype")
-        input_servicetype.servicetype = servicetype
+        edit.form.get("servicetype").value = servicetype
+        connect.psk_form.get("servicetype").value = servicetype
+        connect.wep_form.get("servicetype").value = servicetype
         immutable = is_immutable_service(format(service))
         vpn = is_vpn_service(format(service))
         if is_known_service(format(service)) and not vpn:

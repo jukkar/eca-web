@@ -8,6 +8,7 @@ from util import get_service
 
 vpassphrase = form.regexp(r".{8,64}$", "Must be between 8 and 64 characters")
 psk_form = web.form.Form(
+    form.Hidden('servicetype'),
     form.Password("passphrase", autocomplete="off",
                   description="Passphrase"),
     form.Password("passphrase2", autocomplete="off",
@@ -20,6 +21,7 @@ psk_form = web.form.Form(
 )
 
 wep_form = web.form.Form(
+    form.Hidden('servicetype'),
     form.Password("passphrase", autocomplete="off",
                   description="Passphrase"),
     form.Password("passphrase2", autocomplete="off",

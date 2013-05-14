@@ -19,8 +19,7 @@ $def with (pagetitle, service_id, form)
 	$ ipv6_method = get_dict_value(properties, "IPv6.Configuration", "Method")
 	$if ipv6_method == "":
 		$ ipv6_method = "auto"
-	$ hidden = form.get("servicetype")
-	$ service_type = hidden.servicetype
+	$ service_type = form.get("servicetype").value
 	$ favorite = get_value(properties, "Favorite")
 	<script type="text/javascript">
 	  function updateFields() {
