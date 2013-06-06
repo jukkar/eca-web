@@ -6,7 +6,6 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 import sys
-import syslog
 
 class Canceled(dbus.DBusException):
 	_dbus_error_name = "net.connman.Error.Canceled"
@@ -17,7 +16,6 @@ class LaunchBrowser(dbus.DBusException):
 def print_err(*args):
 	msg = ' '.join(map(str,args)) + '\n'
 	sys.stderr.write(msg)
-	#syslog.syslog(msg)
 
 def read_answer(stdin):
     out = ''
