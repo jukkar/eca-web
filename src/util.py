@@ -156,7 +156,7 @@ def get_raw_value(properties, key):
 
 def get_dict_value(properties, key, value):
     try:
-        return get_raw_value(properties, key)[value]
+        return str(get_raw_value(properties, key)[value])
     except:
         return ""
 
