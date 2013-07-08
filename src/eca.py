@@ -261,7 +261,7 @@ class Edit:
                                     "Please edit correct config file in <samp>/var/lib/connman-vpn</samp> instead.")
             return render.error("VPN services cannot be edited.",
                                 "Place config file to <samp>/var/lib/connman-vpn</samp> to provision a VPN service.",
-                                "See <a href='http://git.kernel.org/cgit/network/connman/connman.git/tree/doc/config-format.txt'>config file format specification</a> for details.")
+                                "See <a href='http://git.kernel.org/cgit/network/connman/connman.git/tree/doc/vpn-config-format.txt'>config file format specification</a> for details.")
 
         else:
             securities = get_security(format(service))
