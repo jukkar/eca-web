@@ -25,6 +25,7 @@ ssid = None
 passphrase = None
 ethernet = "OFF"
 bluetooth = "OFF"
+gadget = "OFF"
 
 form = web.form.Form(
     web.form.Radio('wifi', args=['ON', 'OFF'],
@@ -40,6 +41,9 @@ form = web.form.Form(
     web.form.Radio('bluetooth', args=['ON', 'OFF'],
                    value=bluetooth,
                    description="Activate bluetooth tethering"),
+    web.form.Radio('gadget', args=['ON', 'OFF'],
+                   value=gadget,
+                   description="Activate USB tethering"),
     web.form.Button('Submit', value="tethering"))
 
 def view():
@@ -54,4 +58,6 @@ def update(input):
         set_tethering_status("ethernet", input.ethernet)
     if input.bluetooth != bluetooth:
         set_tethering_status("bluetooth", input.bluetooth)
+    if input.gadget != gadget:
+        set_tethering_status("gadget", input.gadget)
 

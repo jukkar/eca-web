@@ -45,11 +45,15 @@ def main_screen():
     if tethering.bluetooth == None:
         tethering.bluetooth = "OFF"
 
+    if tethering.gadget == None:
+        tethering.gadget = "OFF"
+
     tethering.form.get('ssid').value = tethering.ssid
     tethering.form.get('passphrase').value = tethering.passphrase
     tethering.form.get('wifi').value = tethering.wifi
     tethering.form.get('ethernet').value = tethering.ethernet
     tethering.form.get('bluetooth').value = tethering.bluetooth
+    tethering.form.get('gadget').value = tethering.gadget
 
     offlinemode_status = get_offlinemode_status()
     if offlinemode_status == True:
@@ -59,11 +63,12 @@ def main_screen():
     technology.form.get('offlinemode').value = technology.offlinemode
 
     (technology.wired, technology.wifi, technology.cellular,
-     technology.bluetooth) = get_technology_status()
+     technology.bluetooth, technology.gadget) = get_technology_status()
     technology.form.get('wired').value = technology.wired
     technology.form.get('wifi').value = technology.wifi
     technology.form.get('cellular').value = technology.cellular
     technology.form.get('bluetooth').value = technology.bluetooth
+    technology.form.get('gadget').value = technology.gadget
 
     return render.base(listing(),
                        title, logout, help)

@@ -13,6 +13,9 @@
     <p>The <i>Wifi</i> technology refers to wireless lan devices found in the host.
     <p>The <i>Cellular</i> technology refers to 3G modems found in the host.
     <p>The <i>Bluetooth</i> technology refers to all Bluetooth devices found in the host.
+    <p>The <i>USB networking</i> technology refers to USB gadget support found in the host.
+      If the host does not support USB peripheral mode, then USB networking
+      cannot be enabled.
     <h3>Tethering</h3>
     <p>The tethering form allows you to activate tethering i.e., access network
       resources via this host.
@@ -36,6 +39,13 @@
       You must pair the other device before you can connect to this tethered
       Bluetooth device. Pairing can be done via Bluetooth link in the
       technology listing if Bluetooth is ON.
+    <p>USB tethering allows you to connect to Internet via this device using
+      your laptop USB connection. Normally this cannot be activated in normal
+      laptop or PC as they lack the USB peripheral (gadget) support.
+      USB peripheral support is normally only available in those devices that
+      have USB B type (micro/mini) socket.
+      USB networking requires g_ether Linux kernel module to be loaded and
+      Gadget (USB networking) technology enabled.
     <p>If you want to access Internet via your cellular modem, then you need
       to connect to Internet at least once using cellular service. After that
       the cellular service is set into auto connect mode.

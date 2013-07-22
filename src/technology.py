@@ -27,6 +27,7 @@ wifi = "ON"
 cellular = "ON"
 bluetooth = "ON"
 wired = "ON"
+gadget = "OFF"
 
 form = web.form.Form(
     web.form.Radio('offlinemode', args=["ON", "OFF"],
@@ -44,6 +45,9 @@ form = web.form.Form(
     web.form.Radio('bluetooth', args=["ON", "OFF"],
                    value=bluetooth,
                    description="Bluetooth"),
+    web.form.Radio('gadget', args=["ON", "OFF"],
+                   value=gadget,
+                   description="USB networking"),
     web.form.Button('Submit', value="technology"))
 
 def view():
@@ -72,3 +76,6 @@ def update(input):
 
     if input.bluetooth != bluetooth:
         set_technology_status("bluetooth", input.bluetooth)
+
+    if input.gadget != gadget:
+        set_technology_status("gadget", input.gadget)

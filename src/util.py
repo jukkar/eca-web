@@ -285,9 +285,10 @@ def get_technology_status(technology_type = None):
 		wifi_path = "/net/connman/technology/wifi"
 		cellular_path = "/net/connman/technology/cellular"
 		bluetooth_path = "/net/connman/technology/bluetooth"
+		gadget_path = "/net/connman/technology/gadget"
 		tech_path = ""
 		status_wired = status_wifi = status_cellular = \
-		    status_bluetooth = "OFF"
+		    status_bluetooth = status_gadget = "OFF"
 	for path, properties in get_technology_properties():
 		if path == tech_path:
 			if properties["Powered"] == dbus.Boolean(True):
@@ -316,8 +317,14 @@ def get_technology_status(technology_type = None):
 					status_bluetooth = "ON"
 				else:
 					status_bluetooth = "OFF"
+			elif path == gadget_path:
+				if properties["Powered"] == dbus.Boolean(True):
+					status_gadget = "ON"
+				else:
+					status_gadget = "OFF"
 
-	return (status_wired, status_wifi, status_cellular, status_bluetooth)
+	return (status_wired, status_wifi, status_cellular, status_bluetooth,
+		status_gadget)
 
 def set_technology_status(technology_type, new_status):
 	path = "/net/connman/technology/" + technology_type
