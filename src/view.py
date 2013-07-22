@@ -35,6 +35,7 @@ def main_screen():
      tethering.passphrase) = get_tethering_status("wifi")
     tethering.ethernet= get_tethering_status("ethernet")
     tethering.bluetooth = get_tethering_status("bluetooth")
+    tethering.gadget = get_tethering_status("gadget")
 
     if tethering.wifi== None:
         tethering.wifi = "OFF"
